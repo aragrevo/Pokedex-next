@@ -8,14 +8,7 @@ export function Layout({children}) {
         <link rel='icon' href='/favicon.ico' />
       </Head>
 
-      <main className='min-h-screen bg-slate-100'>
-        <nav>
-          <ul>
-            <li>HOla</li>
-          </ul>
-        </nav>
-        {children}
-      </main>
+      <main className='min-h-screen bg-slate-100'>{children}</main>
     </>
   );
 }
