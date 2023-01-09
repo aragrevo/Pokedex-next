@@ -42,3 +42,27 @@ export async function updatePokemon(id, data) {
   const res = await handleRequest(`${API_URL}/${id}`, requestOptions, null);
   return res;
 }
+
+export async function deletePokemon(id) {
+  const requestOptions = {
+    method: 'DELETE',
+    headers: myHeaders,
+    redirect: 'follow',
+  };
+
+  const res = await handleRequest(`${API_URL}/${id}`, requestOptions, null);
+  return res;
+}
+
+export async function createPokemon(data) {
+  const raw = JSON.stringify(data);
+  const requestOptions = {
+    method: 'POST',
+    headers: myHeaders,
+    body: raw,
+    redirect: 'follow',
+  };
+
+  const res = await handleRequest(`${API_URL}`, requestOptions, null);
+  return res;
+}

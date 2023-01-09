@@ -1,7 +1,8 @@
 import {useState} from 'react';
 import Link from 'next/link';
+import {useRouter} from 'next/router';
 
-import {getPokemonBy, getPokemons, updatePokemon} from '@services/pokemon-api';
+import {createPokemon, deletePokemon, getPokemonBy, getPokemons, updatePokemon} from '@services/pokemon-api';
 import {toastSuccess} from '@services/toast-adapter';
 import {Container, Layout} from '@components/layout';
 import {PokemonImage} from '@components/pokemon';
@@ -11,13 +12,25 @@ function PokemonPage({pokemon}) {
   const {name, no} = pokemon;
   const [form, setForm] = useState({});
   const [currentPokemon, setCurrentPokemon] = useState(pokemon);
+  const router = useRouter();
 
-  const handleSave = async e => {
-    e.preventDefault();
+  const update = async () => {
     const res = await updatePokemon(pokemon._id, form);
     if (res === null) return;
     toastSuccess('Saved');
     setCurrentPokemon(res);
+  };
+
+  const create = async () => {
+    const res = await createPokemon(form);
+    if (res === null) return;
+    toastSuccess('Created');
+    router.push(`/pokemon/${res._id}`);
+  };
+
+  const handleSave = async e => {
+    e.preventDefault();
+    pokemon._id ? await update() : await create();
   };
 
   const handleChange = (key, value) => {
@@ -25,6 +38,12 @@ function PokemonPage({pokemon}) {
       ...current,
       [key]: value,
     }));
+  };
+
+  const handleDelete = async () => {
+    const res = await deletePokemon(pokemon._id);
+    if (res === null) return;
+    router.push('/');
   };
 
   const pokemonNumber = form.no ?? no;
@@ -40,7 +59,13 @@ function PokemonPage({pokemon}) {
         </Link>
         <section className='overflow-hidden '>
           <h1 className='text-6xl text-center mb-8 capitalize'>
-            {currentPokemon?.name} <small>{currentPokemon?.no}</small>
+            {pokemon._id ? (
+              <span>
+                {currentPokemon?.name} <small>{currentPokemon?.no}</small>
+              </span>
+            ) : (
+              <span>Create pokemon</span>
+            )}
           </h1>
           <div className='max-w-3xl p-8 mx-auto'>
             <div className='grid grid-cols-4 grid-rows-2 gap-4 h-auto'>
@@ -67,11 +92,21 @@ function PokemonPage({pokemon}) {
                 <Input label='No' value={pokemonNumber} onChange={e => handleChange('no', e.target.value)} />
                 <Input label='Name' value={pokemonName} onChange={e => handleChange('name', e.target.value)} />
               </div>
-              <button
-                type='submit'
-                className='text-white float-right bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center '>
-                Save
-              </button>
+              <div className='flex gap-4 justify-end'>
+                <button
+                  type='submit'
+                  className='text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center '>
+                  Save
+                </button>
+                {pokemon._id && (
+                  <button
+                    type='button'
+                    onClick={handleDelete}
+                    className='text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center '>
+                    Delete
+                  </button>
+                )}
+              </div>
             </form>
           </div>
         </section>

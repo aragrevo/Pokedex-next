@@ -18,7 +18,7 @@ export function SearchInput({list, onSearch}) {
   };
 
   return (
-    <form noValidate className='mb-8' onSubmit={handleSearch}>
+    <form noValidate className='col-span-full sm:col-span-4' onSubmit={handleSearch}>
       <label htmlFor='default-search' className='mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white'>
         Search
       </label>
