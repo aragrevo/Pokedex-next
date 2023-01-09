@@ -1,43 +1,56 @@
 import {useState} from 'react';
 import {Container, Layout} from '@components/layout';
-import {Pagination} from '@components/ui';
+import {Pagination, SearchInput} from '@components/ui';
 import {PokemonCard} from '@components/pokemon';
-import {API_LIMIT, getPokemons} from '@services/pokemon-api';
+import {API_LIMIT, getPokemonBy, getPokemons} from '@services/pokemon-api';
 
 // TODO: get from db
 const TOTAL_POKEMONS = 650;
 
 function Home({pokemons, pages}) {
-  const [pokemonList, setPokemonList] = useState([]);
-  const [visitedPages, setVisitedPages] = useState({});
+  const [pokemonList, setPokemonList] = useState(pokemons);
+  const [pokemonSearch, setPokemonSearch] = useState(pokemons);
+  const [page, setPage] = useState(1);
+  const [searched, setSearched] = useState(false);
 
-  const onChangePage = async page => {
-    const localData = visitedPages[page];
-    if (localData) {
-      setPokemonList(localData);
-      return;
-    }
-    const offset = (page - 1) * API_LIMIT;
+  const onChangePage = async p => {
+    const offset = (p - 1) * API_LIMIT;
     const resp = await getPokemons(offset);
-    setVisitedPages(current => ({
-      ...current,
-      [page]: resp,
-    }));
+    setPage(p);
     setPokemonList(resp);
+    setPokemonSearch(resp);
   };
 
-  const list = pokemonList.length > 0 ? pokemonList : pokemons;
+  const handleSearch = async e => {
+    e.preventDefault();
+    const data = new FormData(e.target);
+    const query = data.get('default-search').trim().toLowerCase();
+    if (!query) {
+      setSearched(false);
+      setPokemonSearch(pokemonList);
+      return;
+    }
+    let found = pokemonList.filter(pokemon => pokemon.name === query);
+    if (found.length === 0) {
+      const pokemon = await getPokemonBy(query);
+      found = [pokemon];
+    }
+    setSearched(true);
+    setPokemonSearch(found);
+  };
+
   return (
     <Layout>
       <Container>
         <section className='overflow-hidden '>
           <h1 className='text-6xl text-center mb-8'>Pokedex App</h1>
+          <SearchInput onSearch={handleSearch} />
           <div className='grid grid-cols-12 gap-2 sm:gap-4'>
-            {list.map(({name, _id, no}) => (
+            {pokemonSearch.map(({name, _id, no}) => (
               <PokemonCard key={_id} name={name} id={_id} no={no} />
             ))}
           </div>
-          <Pagination pages={pages} onChangePage={e => onChangePage(e)} />
+          {!searched && <Pagination page={page} pages={pages} onChangePage={e => onChangePage(e)} />}
         </section>
       </Container>
     </Layout>
