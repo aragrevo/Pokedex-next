@@ -1,30 +1,33 @@
-import {toast} from 'react-toastify';
+import {toastError} from './toast-adapter';
+
 const API_URL = 'https://pokedex-nest-production.up.railway.app/api/v2/pokemon';
 export const API_LIMIT = 54;
 
 const myHeaders = new Headers();
 myHeaders.append('Content-Type', 'application/json');
 
-export async function getPokemons(offset) {
+const handleRequest = async (url, options, resp) => {
   try {
-    const res = await fetch(`${API_URL}?limit=${API_LIMIT}${offset > 0 ? '&offset=' + offset : ''}`);
-    const pokemons = await res.json();
-    return pokemons;
+    const res = await fetch(url, options);
+    const response = await res.json();
+    if (!!response.statusCode && response.statusCode !== 200) throw response.message;
+    return response;
   } catch (error) {
+    toastError(error);
     console.log(error);
-    return [];
+    return resp;
   }
+};
+
+export async function getPokemons(offset) {
+  const url = `${API_URL}?limit=${API_LIMIT}${offset > 0 ? '&offset=' + offset : ''}`;
+  const res = await handleRequest(url, undefined, []);
+  return res;
 }
 
 export async function getPokemonBy(id) {
-  try {
-    const res = await fetch(`${API_URL}/${id}`);
-    const pokemon = await res.json();
-    return pokemon;
-  } catch (error) {
-    console.log(error);
-    return null;
-  }
+  const res = await handleRequest(`${API_URL}/${id}`, undefined, null);
+  return res;
 }
 
 export async function updatePokemon(id, data) {
@@ -35,14 +38,7 @@ export async function updatePokemon(id, data) {
     body: raw,
     redirect: 'follow',
   };
-  try {
-    const res = await fetch(`${API_URL}/${id}`, requestOptions);
-    const response = await res.json();
-    if (!!response.statusCode && response.statusCode !== 200) throw response.message;
-    return response;
-  } catch (error) {
-    toast.error(`${error}`);
-    console.log(error);
-    return null;
-  }
+
+  const res = await handleRequest(`${API_URL}/${id}`, requestOptions, null);
+  return res;
 }
