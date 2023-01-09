@@ -1,8 +1,8 @@
 import {useState} from 'react';
-import {toast} from 'react-toastify';
 import Link from 'next/link';
 
 import {getPokemonBy, getPokemons, updatePokemon} from '@services/pokemon-api';
+import {toastSuccess} from '@services/toast-adapter';
 import {Container, Layout} from '@components/layout';
 import {PokemonImage} from '@components/pokemon';
 import {Input} from '@components/ui';
@@ -16,7 +16,7 @@ function PokemonPage({pokemon}) {
     e.preventDefault();
     const res = await updatePokemon(pokemon._id, form);
     if (res === null) return;
-    toast.success('Saved');
+    toastSuccess('Saved');
     setCurrentPokemon(res);
   };
 
@@ -28,8 +28,8 @@ function PokemonPage({pokemon}) {
     }));
   };
 
-  const pokemonNumber = form.no || no;
-  const pokemonName = form.name || name;
+  const pokemonNumber = form.no ?? no;
+  const pokemonName = form.name ?? name;
 
   return (
     <Layout>
@@ -88,16 +88,26 @@ export async function getStaticPaths() {
     params: {id: pokemon._id},
   }));
 
-  return {paths, fallback: false};
+  return {paths, fallback: 'blocking'};
 }
 
 export async function getStaticProps(ctx) {
   const pokemon = await getPokemonBy(ctx.params.id);
 
+  if (!pokemon) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    };
+  }
+
   return {
     props: {
       pokemon,
     },
+    revalidate: 60,
   };
 }
 
