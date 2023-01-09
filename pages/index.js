@@ -54,6 +54,7 @@ export async function getStaticProps() {
       pokemons,
       pages,
     },
+    revalidate: 60,
   };
 }
 
