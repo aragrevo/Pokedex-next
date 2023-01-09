@@ -12,7 +12,7 @@ export function SearchInput({list, onSearch}) {
     let found = list.filter(pokemon => pokemon.name === query);
     if (found.length === 0) {
       const pokemon = await getPokemonBy(query);
-      found = [pokemon];
+      if (pokemon) found = [pokemon];
     }
     onSearch(true, found);
   };
