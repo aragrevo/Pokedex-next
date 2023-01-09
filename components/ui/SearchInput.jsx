@@ -1,6 +1,24 @@
-export function SearchInput({onSearch}) {
+import {getPokemonBy} from '@services/pokemon-api';
+
+export function SearchInput({list, onSearch}) {
+  const handleSearch = async e => {
+    e.preventDefault();
+    const data = new FormData(e.target);
+    const query = data.get('default-search').trim().toLowerCase();
+    if (!query) {
+      onSearch(false, list);
+      return;
+    }
+    let found = list.filter(pokemon => pokemon.name === query);
+    if (found.length === 0) {
+      const pokemon = await getPokemonBy(query);
+      found = [pokemon];
+    }
+    onSearch(true, found);
+  };
+
   return (
-    <form noValidate className='mb-8' onSubmit={onSearch}>
+    <form noValidate className='mb-8' onSubmit={handleSearch}>
       <label htmlFor='default-search' className='mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white'>
         Search
       </label>
