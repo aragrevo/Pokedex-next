@@ -1,9 +1,10 @@
 import Image from 'next/image';
+import Link from 'next/link';
 
 export function PokemonCard({name, id, no}) {
   return (
     <article className='col-span-12 sm:col-span-4 md:col-span-3 lg:col-span-2 relative mt-4 sm:mt-5'>
-      <a href='#!' data-mdb-ripple='true' data-mdb-ripple-color='light' className='group'>
+      <Link href={`/pokemon/${id}`} data-mdb-ripple='true' data-mdb-ripple-color='light' className='group'>
         <div className='rounded-lg shadow-lg bg-white'>
           <Image
             width={192}
@@ -17,7 +18,7 @@ export function PokemonCard({name, id, no}) {
             <h2 className='text-gray-900 z-10 text-xl font-medium uppercase'>{name}</h2>
           </div>
         </div>
-      </a>
+      </Link>
     </article>
   );
 }

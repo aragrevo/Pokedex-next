@@ -1,11 +1,11 @@
 import {useState} from 'react';
-import {Container, Layout, Pagination} from '@components/layout';
+import {Container, Layout} from '@components/layout';
+import {Pagination} from '@components/ui';
 import {PokemonCard} from '@components/pokemon';
-import {getPokemons} from 'services/pokemon';
+import {API_LIMIT, getPokemons} from '@services/pokemon-api';
 
 // TODO: get from db
 const TOTAL_POKEMONS = 650;
-const LIMIT = 54;
 
 function Home({pokemons, pages}) {
   const [pokemonList, setPokemonList] = useState([]);
@@ -17,7 +17,7 @@ function Home({pokemons, pages}) {
       setPokemonList(localData);
       return;
     }
-    const offset = (page - 1) * LIMIT;
+    const offset = (page - 1) * API_LIMIT;
     const resp = await getPokemons(offset);
     setVisitedPages(current => ({
       ...current,
@@ -45,9 +45,7 @@ function Home({pokemons, pages}) {
 }
 
 export async function getStaticProps() {
-  const res = await fetch(`https://pokedex-nest-production.up.railway.app/api/v2/pokemon?limit=${LIMIT}`);
-  const pokemons = await res.json();
-
+  const pokemons = await getPokemons(0);
   const qty = Math.ceil(TOTAL_POKEMONS / pokemons.length);
   const pages = Array.from(Array(qty).keys()).map((_, i) => i + 1);
 
