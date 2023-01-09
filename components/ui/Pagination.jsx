@@ -16,8 +16,8 @@ export function Pagination({pages, onChangePage}) {
           key={page}
           type='button'
           className={`${
-            page === currentPage ? 'bg-blue-800' : ''
-          } first:rounded-l last:rounded-r inline-block px-3 md:px-5 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase hover:bg-blue-700 focus:bg-blue-700 focus:outline-none focus:ring-0 active:bg-blue-800 transition duration-150 ease-in-out`}>
+            page === currentPage ? 'bg-blue-800' : 'bg-blue-600'
+          } first:rounded-l last:rounded-r inline-block px-3 md:px-5 py-2.5  text-white font-medium text-xs leading-tight uppercase hover:bg-blue-700 focus:bg-blue-700 focus:outline-none focus:ring-0 active:bg-blue-800 transition duration-150 ease-in-out`}>
           {page}
         </button>
       ))}
