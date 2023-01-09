@@ -8,9 +8,9 @@ import {PokemonImage} from '@components/pokemon';
 import {Input} from '@components/ui';
 
 function PokemonPage({pokemon}) {
-  const [form, setForm] = useState({});
-  const [currentPokemon, setCurrentPokemon] = useState();
   const {name, no} = pokemon;
+  const [form, setForm] = useState({});
+  const [currentPokemon, setCurrentPokemon] = useState(pokemon);
 
   const handleSave = async e => {
     e.preventDefault();
@@ -21,7 +21,6 @@ function PokemonPage({pokemon}) {
   };
 
   const handleChange = (key, value) => {
-    if (!currentPokemon) setCurrentPokemon(pokemon);
     setForm(current => ({
       ...current,
       [key]: value,
@@ -41,7 +40,7 @@ function PokemonPage({pokemon}) {
         </Link>
         <section className='overflow-hidden '>
           <h1 className='text-6xl text-center mb-8 capitalize'>
-            {currentPokemon?.name || name} <small>{currentPokemon?.no || no}</small>
+            {currentPokemon?.name} <small>{currentPokemon?.no}</small>
           </h1>
           <div className='max-w-3xl p-8 mx-auto'>
             <div className='grid grid-cols-4 grid-rows-2 gap-4 h-auto'>
